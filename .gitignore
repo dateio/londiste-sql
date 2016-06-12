@@ -12,6 +12,7 @@ regression.*
 newgrants_*.sql
 oldgrants_*.sql
 
+debian/control
 debian/tmp
 debian/files
 debian/postgresql-*
