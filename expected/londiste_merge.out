@@ -253,7 +253,7 @@ select * from londiste.global_add_table('part3_set', 'tblmerge');
       200 | Table added: tblmerge
 (1 row)
 
-\set ECHO off
+\set ECHO none
 select * from testmatrix();
      p1s      |     p2s      |     p3s      |     p1r     |     p2r     |     p3r     
 --------------+--------------+--------------+-------------+-------------+-------------

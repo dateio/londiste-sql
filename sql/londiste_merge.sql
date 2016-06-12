@@ -70,7 +70,7 @@ select * from londiste.get_table_list('combined_set');
 
 select * from londiste.global_add_table('part3_set', 'tblmerge');
 
-\set ECHO off
+\set ECHO none
 
 create table states ( state text );
 insert into states values ('in-copy');
