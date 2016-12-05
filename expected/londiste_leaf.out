@@ -85,7 +85,7 @@ order by 1;
 (2 rows)
 
 insert into leafdata values (1, 'asd');
-ERROR:  Table 'public.leafdata' to queue 'leafq': change not allowed (I)
+ERROR:  Table 'public.leafdata' to queue 'leafq': change not allowed (INSERT)
 select * from londiste.global_remove_table('leafq', 'public.tmp');
  ret_code |         ret_note          
 ----------+---------------------------
