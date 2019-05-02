@@ -1,5 +1,5 @@
 create or replace function londiste.find_column_types(tbl text)
-returns text as $$
+returns text as $plpgsql$
 -- ----------------------------------------------------------------------
 -- Function: londiste.find_column_types(1)
 --
@@ -18,13 +18,13 @@ declare
 begin
     tbl_oid := londiste.find_table_oid(tbl);
     res := '';
-    for col in 
+    for col in
         SELECT CASE WHEN k.attname IS NOT NULL THEN 'k' ELSE 'v' END AS type
             FROM pg_attribute a LEFT JOIN (
-                SELECT k.attname FROM pg_index i, pg_attribute k
+                SELECT k.attnum, k.attname FROM pg_index i, pg_attribute k
                  WHERE i.indrelid = tbl_oid AND k.attrelid = i.indexrelid
                    AND i.indisprimary AND k.attnum > 0 AND NOT k.attisdropped
-                ) k ON (k.attname = a.attname)
+                ) k ON (k.attnum = a.attnum)
             WHERE a.attrelid = tbl_oid AND a.attnum > 0 AND NOT a.attisdropped
             ORDER BY a.attnum
     loop
@@ -33,5 +33,5 @@ begin
 
     return res;
 end;
-$$ language plpgsql strict stable;
+$plpgsql$ language plpgsql strict stable;
 
