@@ -29,6 +29,7 @@ as $$
 --      D - ON DELETE
 --      Q - use pgq.sqltriga() as trigger function
 --      L - use pgq.logutriga() as trigger function
+--      J - use pgq.jsontriga() as trigger function
 --      B - BEFORE
 --      A - AFTER
 --      S - SKIP
@@ -62,7 +63,7 @@ declare
     -- ordinary argument array
     _args text[];
     -- array with all valid tgflags values
-    _valid_flags char[] := array['B','A','Q','L','I','U','D','S'];
+    _valid_flags char[] := array['B','A','Q','L','J','I','U','D','S'];
     -- argument flags
     _skip boolean := false;
     _no_triggers boolean := false;
@@ -125,6 +126,9 @@ begin
     if 'L' = any(_tgflags) then
         lg_func := 'pgq.logutriga';
     end if;
+    if 'J' = any(_tgflags) then
+        lg_func := 'pgq.jsontriga';
+    end if;
     if 'I' = any(_tgflags) then
         lg_event := lg_event || ' or insert';
     end if;
@@ -141,7 +145,7 @@ begin
     if i_node_type = 'leaf' then
         -- on weird leafs the trigger funcs may not exist
         perform 1 from pg_proc p join pg_namespace n on (n.oid = p.pronamespace)
-            where n.nspname = 'pgq' and p.proname in ('logutriga', 'sqltriga');
+            where n.nspname = 'pgq' and p.proname in ('logutriga', 'sqltriga', 'jsontriga');
         if not found then
             select 201, 'Trigger not created' into ret_code, ret_note;
             return;

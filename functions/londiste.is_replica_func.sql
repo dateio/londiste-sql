@@ -9,6 +9,6 @@ returns boolean as $$
 -- ----------------------------------------------------------------------
 select count(1) > 0
   from pg_proc f join pg_namespace n on (n.oid = f.pronamespace)
-  where f.oid = $1 and n.nspname = 'pgq' and f.proname in ('sqltriga', 'logutriga');
+  where f.oid = $1 and n.nspname = 'pgq' and f.proname in ('sqltriga', 'logutriga', 'jsontriga');
 $$ language sql strict stable;
 

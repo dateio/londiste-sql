@@ -39,6 +39,7 @@ as $$
 --      D - ON DELETE
 --      Q - use pgq.sqltriga() as trigger function
 --      L - use pgq.logutriga() as trigger function
+--      J - use pgq.jsontriga() as trigger function
 --      B - BEFORE
 --      A - AFTER
 --      S - SKIP
