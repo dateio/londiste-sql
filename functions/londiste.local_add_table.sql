@@ -259,7 +259,7 @@ begin
                 on (n2.queue_name = n1.combined_queue)
             left join londiste.table_info t
                 on (t.queue_name = n2.queue_name and t.table_name = fq_table_name and t.local)
-            where n1.queue_name = i_queue_name and n2.node_type = 'root'
+            where n1.queue_name = i_queue_name and (n2.node_type = 'root' or n2.node_type = 'branch')
             into _combined_queue, _combined_table;
         if found and _combined_table is null then
             select f.ret_code, f.ret_note
