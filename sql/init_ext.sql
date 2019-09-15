@@ -1,8 +1,7 @@
 \set ECHO none
 
 set log_error_verbosity = 'terse';
-set client_min_messages = 'fatal';
-create language plpgsql;
+create or replace language plpgsql;
 set client_min_messages = 'warning';
 
 create extension pgq;

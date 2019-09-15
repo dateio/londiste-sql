@@ -97,7 +97,7 @@ begin
         cnt := cnt + 1;
     end if;
 
-    return cnt;
+    return 0;
 end;
 $$ language plpgsql;
 

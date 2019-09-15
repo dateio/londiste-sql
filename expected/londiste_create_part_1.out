@@ -63,15 +63,15 @@ select count(*) from pg_rules where schemaname = 'public' and tablename = 'event
 select trigger_name, event_manipulation, action_statement
     from information_schema.triggers
     where event_object_schema = 'public' and event_object_table = 'events_2011_01';
- trigger_name | event_manipulation |         action_statement          
---------------+--------------------+-----------------------------------
- Fooza        | DELETE             | EXECUTE PROCEDURE "NullTrigger"()
+ trigger_name | event_manipulation |         action_statement         
+--------------+--------------------+----------------------------------
+ Fooza        | DELETE             | EXECUTE FUNCTION "NullTrigger"()
 (1 row)
 
 select tgenabled, pg_get_triggerdef(oid) from pg_trigger where tgrelid = 'events_2011_01'::regclass::oid;
- tgenabled |                                              pg_get_triggerdef                                              
------------+-------------------------------------------------------------------------------------------------------------
- A         | CREATE TRIGGER "Fooza" AFTER DELETE ON public.events_2011_01 FOR EACH ROW EXECUTE PROCEDURE "NullTrigger"()
+ tgenabled |                                             pg_get_triggerdef                                              
+-----------+------------------------------------------------------------------------------------------------------------
+ A         | CREATE TRIGGER "Fooza" AFTER DELETE ON public.events_2011_01 FOR EACH ROW EXECUTE FUNCTION "NullTrigger"()
 (1 row)
 
 -- test weird quoting
