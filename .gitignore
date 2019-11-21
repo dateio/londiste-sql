@@ -25,3 +25,8 @@ londiste.sql
 londiste.upgrade.sql
 
 results/
+
+docs/Data
+docs/html
+docs/sql
+
