@@ -1,8 +1,6 @@
 \set ECHO none
 
 set log_error_verbosity = 'terse';
-set client_min_messages = 'fatal';
-create language plpgsql;
 set client_min_messages = 'warning';
 
 -- \i ../txid/txid.sql
