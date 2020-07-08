@@ -56,12 +56,12 @@ jobs:
 
       - name: "Install"
         run: |
-          echo "::group::install pgq"
+          echo "::group::install-pgq"
           git clone -q https://github.com/pgq/pgq; make -C pgq
           sudo -nH bash -c "PATH='${PATH}' make install -C pgq"
           echo "::endgroup::"
 
-          echo "::group::install pgq-node"
+          echo "::group::install-pgq-node"
           git clone -q https://github.com/pgq/pgq-node; make -C pgq-node
           sudo -nH bash -c "PATH='${PATH}' make install -C pgq-node"
           echo "::endgroup::"
