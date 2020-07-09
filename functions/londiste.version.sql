@@ -4,11 +4,14 @@ returns text as $$
 -- ----------------------------------------------------------------------
 -- Function: londiste.version(0)
 --
---      Returns version string for londiste.  ATM it is based on SkyTools
---      version and only bumped when database code changes.
+--      Returns version string for londiste.
 -- ----------------------------------------------------------------------
+declare
+    _vers text;
 begin
-    return '3.2.4';
+    select extversion from pg_catalog.pg_extension
+        where extname = 'londiste' into _vers;
+    return _vers;
 end;
 $$ language plpgsql;
 
