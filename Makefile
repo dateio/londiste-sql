@@ -1,8 +1,8 @@
 
 EXTENSION = londiste
 
-EXT_VERSION = 3.4.1
-EXT_OLD_VERSIONS = 3.2 3.2.3 3.2.4 3.4
+EXT_VERSION = 3.5
+EXT_OLD_VERSIONS = 3.2 3.2.3 3.2.4 3.4 3.4.1
 
 base_regress = londiste_provider londiste_subscriber \
 	       londiste_fkeys londiste_execute londiste_seqs londiste_merge \
@@ -26,8 +26,4 @@ deb:
 
 debclean:
 	make -f debian/rules debclean
-
-TARNAME = $(EXTENSION)-$(EXT_VERSION)
-dist:
-	git archive --format=tar.gz --prefix=$(TARNAME)/ -o $(TARNAME).tar.gz HEAD
 
