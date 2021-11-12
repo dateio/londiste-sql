@@ -6,7 +6,8 @@ EXT_OLD_VERSIONS = 3.2 3.2.3 3.2.4 3.4 3.4.1
 
 base_regress = londiste_provider londiste_subscriber \
 	       londiste_fkeys londiste_execute londiste_seqs londiste_merge \
-	       londiste_leaf londiste_create_part
+	       londiste_leaf londiste_create_part \
+	       londiste_merge_fkeys
 
 Contrib_regress = init_noext $(base_regress)
 Extension_regress = init_ext $(base_regress)

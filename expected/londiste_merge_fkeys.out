@@ -1,0 +1,223 @@
+set client_min_messages = 'warning';
+\set VERBOSITY 'terse'
+\set ECHO none
+-- leaf1/leaf2->root
+\set target 'fx1-target'
+\set leaf1 'fx1-leaf1'
+\set leaf2 'fx1-leaf2'
+\set tbl1 'fx1.table1'
+\set tbl2 'fx1.table2'
+select mkcascade(array[:'target'], array[]::text[], null, array[:'leaf1', :'leaf2'], :'target', array[:'tbl1', :'tbl2']);
+ mkcascade 
+-----------
+ done
+(1 row)
+
+insert into londiste.pending_fkeys values (:'tbl1', :'tbl2', 'name', 'def');
+select * from londiste.get_table_pending_fkeys(:'tbl1');
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx1.table1 | fx1.table2 | name      | def
+(1 row)
+
+update londiste.table_info set merge_state='ok', local=true where table_name in (:'tbl1', :'tbl2');
+select * from londiste.get_valid_pending_fkeys(:'target');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf1'); -- pick
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx1.table1 | fx1.table2 | name      | def
+(1 row)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+update londiste.table_info set merge_state='catching-up' where table_name = :'tbl1' and queue_name = :'leaf1';
+select * from londiste.get_valid_pending_fkeys(:'target');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf1'); -- no
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+update londiste.table_info set merge_state=null, local=false where table_name = :'tbl1' and queue_name = :'leaf1';
+select * from londiste.get_valid_pending_fkeys(:'target');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf1'); -- pick
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx1.table1 | fx1.table2 | name      | def
+(1 row)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+update londiste.table_info set merge_state=null, local=false where table_name = :'tbl2' and queue_name = :'leaf1';
+select * from londiste.get_valid_pending_fkeys(:'target');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf1');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2'); -- pick?
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx1.table1 | fx1.table2 | name      | def
+(1 row)
+
+-- leaf1/leaf2->branch
+\set target 'fx2-branch'
+\set leaf1 'fx2-leaf1'
+\set leaf2 'fx2-leaf2'
+\set tbl1 'fx2.table1'
+\set tbl2 'fx2.table2'
+select mkcascade(array[]::text[], array[:'target']::text[], null, array[:'leaf1', :'leaf2'], :'target', array[:'tbl1', :'tbl2']);
+ mkcascade 
+-----------
+ done
+(1 row)
+
+insert into londiste.pending_fkeys values (:'tbl1', :'tbl2', 'name', 'def');
+select * from londiste.get_table_pending_fkeys(:'tbl1');
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx2.table1 | fx2.table2 | name      | def
+(1 row)
+
+update londiste.table_info set merge_state='ok', local=true where table_name in (:'tbl1', :'tbl2');
+select * from londiste.get_valid_pending_fkeys(:'target'); -- pick
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx2.table1 | fx2.table2 | name      | def
+(1 row)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf1');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+update londiste.table_info set merge_state='catching-up' where table_name = :'tbl1' and queue_name = :'leaf1';
+select * from londiste.get_valid_pending_fkeys(:'target'); -- no
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf1');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+update londiste.table_info set merge_state=null, local=false where table_name = :'tbl1' and queue_name = :'leaf1';
+select * from londiste.get_valid_pending_fkeys(:'target'); -- pick
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx2.table1 | fx2.table2 | name      | def
+(1 row)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf1');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+-- leaf1/leaf2->no branch
+\set leaf1 'fx3-leaf1'
+\set leaf2 'fx3-leaf2'
+\set tbl1 'fx3.table1'
+\set tbl2 'fx3.table2'
+select mkcascade(array[]::text[], array[]::text[], null, array[:'leaf1', :'leaf2'], null, array[:'tbl1', :'tbl2']);
+ mkcascade 
+-----------
+ done
+(1 row)
+
+insert into londiste.pending_fkeys values (:'tbl1', :'tbl2', 'name', 'def');
+select * from londiste.get_table_pending_fkeys(:'tbl1');
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx3.table1 | fx3.table2 | name      | def
+(1 row)
+
+update londiste.table_info set merge_state='ok', local=true where table_name in (:'tbl1', :'tbl2');
+select * from londiste.get_valid_pending_fkeys(:'leaf1'); -- pick
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx3.table1 | fx3.table2 | name      | def
+(1 row)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+update londiste.table_info set merge_state='catching-up' where table_name = :'tbl1' and queue_name = :'leaf1';
+select * from londiste.get_valid_pending_fkeys(:'leaf1');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+update londiste.table_info set merge_state=null, local=false where table_name = :'tbl1' and queue_name = :'leaf1';
+select * from londiste.get_valid_pending_fkeys(:'leaf1'); -- pick
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx3.table1 | fx3.table2 | name      | def
+(1 row)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+update londiste.table_info set merge_state=null, local=false where table_name = :'tbl2' and queue_name = :'leaf1';
+select * from londiste.get_valid_pending_fkeys(:'leaf1');
+ from_table | to_table | fkey_name | fkey_def 
+------------+----------+-----------+----------
+(0 rows)
+
+select * from londiste.get_valid_pending_fkeys(:'leaf2'); -- pick
+ from_table |  to_table  | fkey_name | fkey_def 
+------------+------------+-----------+----------
+ fx3.table1 | fx3.table2 | name      | def
+(1 row)
+
