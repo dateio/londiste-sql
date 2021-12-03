@@ -144,22 +144,28 @@ end;
 $$ language plpgsql strict;
 
 
-create or replace function londiste.restore_table_fkey(i_from_table text, i_fkey_name text)
-returns integer as $$
+drop function if exists londiste.restore_table_fkey(text, text);
+
+create or replace function londiste.restore_table_fkey(i_from_table text, i_fkey_name text, i_lazy boolean default false)
+returns text as $$
 -- ----------------------------------------------------------------------
--- Function: londiste.restore_table_fkey(2)
+-- Function: londiste.restore_table_fkey(3)
 --
 --      Restore dropped fkey.
 --
 -- Parameters:
---      i_from_table - source table
---      i_fkey_name  - fkey name
+--      i_from_table    - source table
+--      i_fkey_name     - fkey name
+--      i_lazy          - if true, then use multi-step create
 --
 -- Returns:
---      nothing
+--      '' - done
+--      sql - SQL statement to be executed
 -- ----------------------------------------------------------------------
 declare
-    fkey    record;
+    fkey        record;
+    is_valid    boolean;
+    tbl_oid     oid;
 begin
     select * into fkey
     from londiste.pending_fkeys 
@@ -167,14 +173,33 @@ begin
     for update;
     
     if not found then
-        return 0;
+        return '';
     end if;
 
-    execute fkey.fkey_def;
 
-    delete from londiste.pending_fkeys where fkey_name = fkey.fkey_name;
-        
-    return 1;
+    if i_lazy then
+        tbl_oid := londiste.find_table_oid(i_from_table);
+
+        select convalidated into is_valid from pg_constraint c
+            where c.contype = 'f' and c.conrelid = tbl_oid and c.conname = i_fkey_name;
+
+        if not found then
+            -- create fkey with NOT VALID
+            return fkey.fkey_def || ' not valid';
+        elsif not is_valid then
+            -- validate
+            return 'alter table only ' || londiste.quote_fqname(fkey.from_table)
+                || ' validate constraint ' || quote_ident(fkey.fkey_name);
+        end if;
+    else
+        -- create fkey
+        execute fkey.fkey_def;
+    end if;
+
+    delete from londiste.pending_fkeys
+        where fkey_name = fkey.fkey_name and from_table = fkey.from_table;
+
+    return '';
 end;
 $$ language plpgsql strict;
 

@@ -63,9 +63,25 @@ select * from londiste.get_valid_pending_fkeys('branch_set');
 select * from londiste.local_set_table_state('branch_set', 'public.ref_3', null, 'ok');
 select * from londiste.get_valid_pending_fkeys('branch_set');
 
--- restore
+-- restore: old
+select * from londiste.get_table_pending_fkeys('public.ref_2');
 select * from londiste.restore_table_fkey('public.ref_2', 'ref_2_ref_fkey');
-select * from londiste.restore_table_fkey('public.ref_3', 'ref_3_ref2_fkey');
+select * from londiste.get_table_pending_fkeys('public.ref_2');
+
+-- restore: new
+select * from londiste.get_table_pending_fkeys('public.ref_3');
+
+select londiste.restore_table_fkey('public.ref_3', 'ref_3_ref2_fkey', true) as step1;
+\gset
+:step1 ;
+
+select londiste.restore_table_fkey('public.ref_3', 'ref_3_ref2_fkey', true) as step2;
+\gset
+:step2 ;
+
+select londiste.restore_table_fkey('public.ref_3', 'ref_3_ref2_fkey', true) as step3;
+
+select * from londiste.get_table_pending_fkeys('public.ref_3');
 
 -- look state
 select * from londiste.get_table_pending_fkeys('public.ref_2');
