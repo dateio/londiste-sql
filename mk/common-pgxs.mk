@@ -97,7 +97,7 @@ endif
 
 test: install
 	$(MAKE) installcheck || { filterdiff --format=unified regression.diffs | less; exit 1; }
-	pg_dump regression > test.dump
+	#pg_dump regression > test.dump
 
 citest: checkver
 	$(MAKE) installcheck || { filterdiff --format=unified regression.diffs; exit 1; }
@@ -158,5 +158,5 @@ dist: checkver
 release: checkver
 	git tag v$(EXT_VERSION)
 	git push github
-	git push github --tag
+	git push github v$(EXT_VERSION):v$(EXT_VERSION)
 
