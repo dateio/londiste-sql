@@ -34,6 +34,7 @@ as $$
 -- ----------------------------------------------------------------------
 declare
     is_root boolean;
+    new_row_count int4;
 begin
     is_root := pgq_node.is_root_node(i_queue_name);
     if i_expect_root then
@@ -44,17 +45,17 @@ begin
         end if;
     end if;
 
-    perform 1 from londiste.applied_execute
-        where execute_file = i_file_name;
-    if found then
+    -- this also lock against potetial parallel execute
+    insert into londiste.applied_execute (queue_name, execute_file, execute_sql, execute_attrs)
+        values (i_queue_name, i_file_name, i_sql, i_attrs)
+        on conflict do nothing;
+    get diagnostics new_row_count = row_count;
+
+    if new_row_count = 0 then
         select 201, 'EXECUTE: "' || i_file_name || '" already applied, skipping'
             into ret_code, ret_note;
         return;
     end if;
-
-    -- this also lock against potetial parallel execute
-    insert into londiste.applied_execute (queue_name, execute_file, execute_sql, execute_attrs)
-        values (i_queue_name, i_file_name, i_sql, i_attrs);
 
     select 200, 'Executing: ' || i_file_name into ret_code, ret_note;
     return;
