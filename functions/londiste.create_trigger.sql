@@ -97,6 +97,12 @@ begin
         end loop;
     end if;
 
+    if _no_triggers then
+        select 201, 'Trigger not created'
+        into ret_code, ret_note;
+        return;
+    end if;
+
     if i_dest_table <> i_table_name and not _got_extra1 then
         -- if renamed table, enforce trigger to put
         -- global table name into extra1
@@ -214,12 +220,6 @@ begin
     end if;
 
     if not found or _old_tgargs is distinct from _new_tgargs then
-        if _no_triggers then
-            select 201, 'Trigger not created'
-            into ret_code, ret_note;
-            return;
-        end if;
-
         -- finalize event
         lg_event := substr(lg_event, 4); -- remove ' or '
         if lg_event = '' then
