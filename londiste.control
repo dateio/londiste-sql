@@ -1,6 +1,6 @@
 # Londiste extension
 comment = 'Londiste replication support code'
-default_version = '3.7'
+default_version = '3.8'
 relocatable = false
 superuser = true
 schema = 'pg_catalog'
