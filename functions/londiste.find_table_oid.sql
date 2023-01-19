@@ -59,7 +59,10 @@ returns oid as $$
 --      oid
 -- ----------------------------------------------------------------------
 begin
-    return londiste.find_rel_oid(tbl, 'r');
+    return coalesce(
+            londiste.find_rel_oid(tbl, 'r'),
+            londiste.find_rel_oid(tbl, 'p')
+        );
 end;
 $$ language plpgsql strict stable;
 
