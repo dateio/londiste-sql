@@ -45,11 +45,7 @@ begin
         -- restore dropped ddl
         if tbl.dropped_ddl is not null then
             -- table is not synced, drop data to make restore faster
-            if pgver >= 80400 then
-                execute 'TRUNCATE ONLY ' || qtbl;
-            else
-                execute 'TRUNCATE ' || qtbl;
-            end if;
+            execute 'TRUNCATE ' || qtbl;
             execute tbl.dropped_ddl;
         end if;
 
